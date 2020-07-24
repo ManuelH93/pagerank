@@ -105,7 +105,7 @@ def sample_pagerank(corpus, damping_factor, n):
         counter += 1
     pagerank = {k: v / n for k, v in visits.items()}
 
-    return pagerank 
+    return pagerank
 
 
 def iterate_pagerank(corpus, damping_factor):
