@@ -67,7 +67,7 @@ def transition_model(corpus, page, damping_factor):
     # If links on page, probability is calculated based on two steps.
     else:
         # Step 1: With probability 1 - damping_factor, any pages in the corpus
-        # #   is chosen randomly.
+        # is chosen randomly.
         for p in corpus:
             distribution[p] = (1-damping_factor) * (1/len(corpus))
         # Step 2: With probability damping_factor, one of the links from page
@@ -88,17 +88,23 @@ def sample_pagerank(corpus, damping_factor, n):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
+    # Start dictionary that keeps track of visits to each page
+    # in corpus
     visits = dict()
     for p in corpus:
             visits[p] = 0
+    # First sample page chosen at random
     sample = random.choice(list(corpus))
+    # Counter to keep track of number of samples
     counter = 0
+    # Sample pages from a Markov Chain random surfer
     while counter < n:
         visits[sample] += 1
         probability = transition_model(corpus, sample, damping_factor)
         sample = random.choices(list(probability.keys()), weights=probability.values(), k=1)[0]
         counter += 1
     pagerank = {k: v / n for k, v in visits.items()}
+
     return pagerank 
 
 
@@ -125,13 +131,14 @@ def iterate_pagerank(corpus, damping_factor):
                 if p1 in corpus[p2] and p1!=p2:
                     pagerank[p1] += damping_factor * (pagerank[p2]/len(corpus[p2]))
                 if len(corpus[p2]) == 0 and p1!=p2:
-                    pagerank[p1] += damping_factor/len(corpus)
+                    pagerank[p1] += damping_factor * (pagerank[p2]/len(corpus))
         difference = {key: abs(pagerank_old[key] - pagerank.get(key)) for key in pagerank_old}
         if all(x < 0.001 for x in difference.values()):
             loop_helper += 1
     total = sum(pagerank.values())
     # Scale value to make sure they add up to 1
     pagerank = {k: v / total for k, v in pagerank.items()}
+
     return pagerank
 
 
