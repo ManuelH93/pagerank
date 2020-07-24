@@ -43,16 +43,19 @@ def iterate_pagerank(corpus, damping_factor):
         pagerank[p] = 1/len(corpus)
     print(pagerank)
     
-    part2 = 0
-    for p in ('1.html', '3.html', '4.html'):
-        part2 += pagerank[p]/len(corpus[p])
 
-    pagerank['2.html'] = ((1-damping_factor)/len(corpus)) + (damping_factor * part2)
+    for p1 in corpus:
+        pagerank[p1] = ((1-damping_factor)/len(corpus)) 
+        for p2 in corpus:
+            if p1 in corpus[p2] and p1!=p2:
+                pagerank[p1] += damping_factor * (pagerank[p2]/len(corpus[p2]))
+            if len(corpus[p2]) == 0 and p1!=p2:
+                pagerank[p1] += damping_factor/len(corpus)
+
 
     print(pagerank)
 
 corpus = crawl('corpus0')
 print(corpus)
 iterate_pagerank(corpus, 0.85)
-
 
