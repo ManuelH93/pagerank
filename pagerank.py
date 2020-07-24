@@ -110,7 +110,28 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    # Initialize pagerank dictionary that includes all pages in corpus
+    pagerank = dict()
+    for p in corpus:
+        pagerank[p] = 1/len(corpus)
+    # Iterate pagerank until change is smaller than 0.001 for all pages.
+    loop_helper = 0
+    while loop_helper == 0:
+        pagerank_old = copy.deepcopy(pagerank)
+        for p1 in corpus:
+            pagerank[p1] = ((1-damping_factor)/len(corpus)) 
+            for p2 in corpus:
+                if p1 in corpus[p2] and p1!=p2:
+                    pagerank[p1] += damping_factor * (pagerank[p2]/len(corpus[p2]))
+                if len(corpus[p2]) == 0 and p1!=p2:
+                    pagerank[p1] += damping_factor/len(corpus)
+        difference = {key: abs(pagerank_old[key] - pagerank.get(key)) for key in pagerank_old}
+        if all(x < 0.001 for x in difference.values()):
+            loop_helper += 1
+    total = sum(pagerank.values())
+    # Scale value to make sure they add up to 1
+    pagerank = {k: v / total for k, v in pagerank.items()}
+    return pagerank
 
 
 if __name__ == "__main__":
